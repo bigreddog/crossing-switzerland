@@ -374,6 +374,7 @@ function populateTable() {
 
         const row = document.createElement("tr");
         row.className = "section-row";
+        row.id = `${sectionId}-row`;
         row.onclick = () => toggleSection(sectionId);
 
         row.innerHTML = `
@@ -420,12 +421,15 @@ function populateTable() {
 
 function toggleSection(sectionId) {
     const rows = document.querySelectorAll(`.${sectionId}`);
-    const sectionRow = document.querySelector(`tr[onclick="toggleSection('${sectionId}')"]`);
+    // Use closest section-row instead of exact onclick match which might be parsed differently
+    const sectionRow = document.querySelector(`#${sectionId}-row`);
 
     rows.forEach(row => {
         row.classList.toggle('visible');
     });
-    sectionRow.classList.toggle('expanded');
+    if (sectionRow) {
+        sectionRow.classList.toggle('expanded');
+    }
 }
 
 function initCalculator() {
