@@ -162,6 +162,8 @@ async function loadGPX() {
 
         let latlngs = [];
         let cumulativeDistance = 0;
+        let cumGain = 0;
+        let cumLoss = 0;
 
         for (let i = 0; i < trkpts.length; i++) {
             const lat = parseFloat(trkpts[i].getAttribute("lat"));
@@ -173,6 +175,15 @@ async function loadGPX() {
                 const prevLat = parseFloat(trkpts[i-1].getAttribute("lat"));
                 const prevLon = parseFloat(trkpts[i-1].getAttribute("lon"));
                 cumulativeDistance += calculateDistance(prevLat, prevLon, lat, lon);
+
+                const prevEleNode = trkpts[i-1].getElementsByTagName("ele")[0];
+                const prevEle = prevEleNode ? parseFloat(prevEleNode.textContent) : 0;
+
+                if (ele > prevEle) {
+                    cumGain += (ele - prevEle);
+                } else if (ele < prevEle) {
+                    cumLoss += (prevEle - ele);
+                }
             }
 
             latlngs.push([lat, lon]);
@@ -180,7 +191,9 @@ async function loadGPX() {
                 lat: lat,
                 lon: lon,
                 ele: ele,
-                dist: cumulativeDistance
+                dist: cumulativeDistance,
+                cumGain: cumGain,
+                cumLoss: cumLoss
             });
         }
 
@@ -199,6 +212,10 @@ async function loadGPX() {
 }
 
 function enrichSectionDataWithGPX() {
+    // Determine exact start of section 1 (distance 0)
+    let prevCumGain = 0;
+    let prevCumLoss = 0;
+
     sectionData.forEach(section => {
         section.aidStations.forEach(station => {
             // Find closest GPX point
@@ -212,6 +229,13 @@ function enrichSectionDataWithGPX() {
                 }
             }
             station.ele = closest.ele;
+
+            // Segment gain/loss since last station (or race start)
+            station.segGain = Math.max(0, Math.round(closest.cumGain - prevCumGain));
+            station.segLoss = Math.max(0, Math.round(closest.cumLoss - prevCumLoss));
+
+            prevCumGain = closest.cumGain;
+            prevCumLoss = closest.cumLoss;
         });
     });
 }
@@ -230,7 +254,12 @@ function renderElevationChart() {
         return cumulativeBoundary;
     });
 
-    // Custom plugin to draw vertical lines
+
+    const chartData = distances.map((dist, index) => ({
+        x: parseFloat(dist),
+        y: elevations[index]
+    }));
+
     const verticalLinePlugin = {
         id: 'verticalLines',
         afterDraw: (chart) => {
@@ -245,21 +274,17 @@ function renderElevationChart() {
 
             let sectionIndex = 1;
             verticalLines.forEach(km => {
-                // Find matching index in labels
-                const labelIndex = distances.findIndex(d => parseFloat(d) >= km);
-                if (labelIndex !== -1) {
-                    const x = xAxis.getPixelForTick(labelIndex);
+                const x = xAxis.getPixelForValue(km);
 
-                    ctx.beginPath();
-                    ctx.moveTo(x, yAxis.top);
-                    ctx.lineTo(x, yAxis.bottom);
-                    ctx.stroke();
+                ctx.beginPath();
+                ctx.moveTo(x, yAxis.top);
+                ctx.lineTo(x, yAxis.bottom);
+                ctx.stroke();
 
-                    // Draw Section label
-                    ctx.fillStyle = 'rgba(255, 99, 132, 0.8)';
-                    ctx.textAlign = 'center';
-                    ctx.fillText(`S${sectionIndex}`, x - 10, yAxis.top + 15);
-                }
+                ctx.fillStyle = 'rgba(255, 99, 132, 0.8)';
+                ctx.textAlign = 'center';
+                ctx.fillText(`S${sectionIndex}`, x - 10, yAxis.top + 15);
+
                 sectionIndex++;
             });
             ctx.restore();
@@ -268,12 +293,12 @@ function renderElevationChart() {
 
     const ctx = document.getElementById('elevationChart').getContext('2d');
     new Chart(ctx, {
-        type: 'line',
+        type: 'scatter',
         data: {
-            labels: distances,
             datasets: [{
+                type: 'line',
                 label: 'Elevation (m)',
-                data: elevations,
+                data: chartData,
                 borderColor: '#3498db',
                 backgroundColor: 'rgba(52, 152, 219, 0.2)',
                 borderWidth: 1,
@@ -288,6 +313,7 @@ function renderElevationChart() {
             maintainAspectRatio: false,
             scales: {
                 x: {
+                    type: 'linear',
                     title: {
                         display: true,
                         text: 'Distance (km)'
@@ -307,7 +333,7 @@ function renderElevationChart() {
                 tooltip: {
                     callbacks: {
                         label: function(context) {
-                            return `Elevation: ${context.parsed.y} m`;
+                            return `Dist: ${context.parsed.x} km, Ele: ${context.parsed.y} m`;
                         }
                     }
                 }
@@ -377,6 +403,9 @@ function populateTable() {
         row.id = `${sectionId}-row`;
         row.onclick = () => toggleSection(sectionId);
 
+        // Start of section distance for section time calculations
+        const sectionStartKm = cumulativeDistance - section.distance;
+
         row.innerHTML = `
             <td>
                 <span class="expand-icon">▶</span>
@@ -387,6 +416,7 @@ function populateTable() {
             <td>${section.elevationGain}</td>
             <td>${section.elevationLoss}</td>
             <td>${section.cutoff}</td>
+            <td class="est-section" data-km="${cumulativeDistance}" data-prev-km="${sectionStartKm}">-</td>
             <td class="est-elapsed" data-km="${cumulativeDistance}">-</td>
             <td class="est-tod" data-km="${cumulativeDistance}">-</td>
         `;
@@ -397,6 +427,7 @@ function populateTable() {
 
         section.aidStations.forEach(station => {
             const stationDist = station.km - prevKm;
+            const tempPrevKm = prevKm;
             prevKm = station.km;
 
             const stRow = document.createElement("tr");
@@ -406,9 +437,10 @@ function populateTable() {
                 <td class="station-cell">↳ ${station.name} (${station.type}) - ${Math.round(station.ele)}m</td>
                 <td>${stationDist.toFixed(1)}</td>
                 <td>${station.km.toFixed(1)}</td>
+                <td>${station.segGain}</td>
+                <td>${station.segLoss}</td>
                 <td>-</td>
-                <td>-</td>
-                <td>-</td>
+                <td class="est-section" data-km="${station.km}" data-prev-km="${tempPrevKm}">-</td>
                 <td class="est-elapsed" data-km="${station.km}">-</td>
                 <td class="est-tod" data-km="${station.km}">-</td>
             `;
@@ -444,6 +476,21 @@ function calculateTimes() {
     const totalDist = 394.0;
     const c = 1.2; // Fatigue factor
     const startDate = new Date(2026, 6, 19, 8, 0); // Sunday 19 July 2026, 08:00
+
+    // Update all section time cells
+    document.querySelectorAll('.est-section').forEach(cell => {
+        const km = parseFloat(cell.getAttribute('data-km'));
+        const prevKm = parseFloat(cell.getAttribute('data-prev-km'));
+        if (km === 0 || isNaN(prevKm)) return;
+
+        const t_x_current = targetHours * Math.pow((km / totalDist), c);
+        const t_x_prev = targetHours * Math.pow((prevKm / totalDist), c);
+        const t_diff = t_x_current - t_x_prev;
+
+        const hours = Math.floor(t_diff);
+        const minutes = Math.round((t_diff - hours) * 60);
+        cell.textContent = `${hours}h ${minutes.toString().padStart(2, '0')}m`;
+    });
 
     // Update all elapsed time cells
     document.querySelectorAll('.est-elapsed').forEach(cell => {
