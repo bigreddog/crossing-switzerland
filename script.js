@@ -148,6 +148,51 @@ function initMap() {
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
     }).addTo(map);
 
+    // Custom "Locate Me" Control
+    L.Control.Locate = L.Control.extend({
+        onAdd: function(map) {
+            const container = L.DomUtil.create('div', 'leaflet-bar leaflet-control leaflet-control-custom');
+
+            container.style.backgroundColor = 'white';
+            container.style.width = '30px';
+            container.style.height = '30px';
+            container.style.display = 'flex';
+            container.style.alignItems = 'center';
+            container.style.justifyContent = 'center';
+            container.style.cursor = 'pointer';
+            container.title = "Go to current location";
+            container.innerHTML = "📍";
+
+            container.onclick = function(){
+                map.locate({setView: true, maxZoom: 14});
+            }
+            return container;
+        }
+    });
+
+    map.addControl(new L.Control.Locate({position: 'topleft'}));
+
+    // Geolocation Event Handlers
+    let userMarker, userCircle;
+
+    map.on('locationfound', function(e) {
+        const radius = e.accuracy / 2;
+
+        if (userMarker) {
+            map.removeLayer(userMarker);
+            map.removeLayer(userCircle);
+        }
+
+        userMarker = L.marker(e.latlng).addTo(map)
+            .bindPopup(`You are within ${radius.toFixed(0)} meters from this point`).openPopup();
+
+        userCircle = L.circle(e.latlng, radius).addTo(map);
+    });
+
+    map.on('locationerror', function(e) {
+        alert("Geolocation access failed or was denied.");
+    });
+
     loadGPX();
 }
 
