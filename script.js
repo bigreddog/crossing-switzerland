@@ -583,90 +583,160 @@ function populateClimbsTable() {
     // Minimum elevation change to consider a "major" climb/descent
     const ELE_THRESHOLD = 50;
 
-    // We will scan gpxData to find major directional changes
-    let isClimbing = null;
-    let startSegmentIdx = 0;
-
-    // Smooth data slightly to avoid micro-fluctuations
-    const smoothData = [];
-    let windowSize = 5; // Use moving average
-    for (let i = 0; i < gpxData.length; i++) {
-        let sum = 0;
-        let count = 0;
-        for (let j = Math.max(0, i - windowSize); j <= Math.min(gpxData.length - 1, i + windowSize); j++) {
-            sum += gpxData[j].ele;
-            count++;
-        }
-        smoothData.push({
-            dist: gpxData[i].dist,
-            ele: sum / count,
-            rawEle: gpxData[i].ele
-        });
-    }
+    // A prominence-based approach to group continuous climbs/descents
+    // We allow counter-elevation up to a certain threshold before breaking a segment.
+    const COUNTER_ELE_THRESHOLD = 30; // 30m of counter-elevation breaks a segment
 
     let segments = [];
 
-    for (let i = 1; i < smoothData.length; i++) {
-        let eleDiff = smoothData[i].ele - smoothData[i-1].ele;
+    let currentSegType = null; // "Climb" or "Descent"
+    let startIdx = 0;
+    let extremeIdx = 0; // The index of the highest/lowest point seen in the current segment
 
-        // Determine current direction
-        let currentDir = eleDiff > 0 ? "Climb" : (eleDiff < 0 ? "Descent" : isClimbing);
+    for (let i = 1; i < gpxData.length; i++) {
+        let currentEle = gpxData[i].ele;
+        let extremeEle = gpxData[extremeIdx].ele;
+        let eleDiffFromExtreme = currentEle - extremeEle;
 
-        if (isClimbing === null) {
-            isClimbing = currentDir;
-            startSegmentIdx = i - 1;
-        } else if (currentDir !== isClimbing) {
-            // Direction changed, record previous segment if it meets threshold
-            let start = smoothData[startSegmentIdx];
-            let end = smoothData[i-1];
-            let segmentEleChange = Math.abs(end.rawEle - start.rawEle);
-            let segmentLength = end.dist - start.dist;
-
-            if (segmentEleChange >= ELE_THRESHOLD && segmentLength > 0.1) {
-                segments.push({
-                    type: isClimbing,
-                    startDist: start.dist,
-                    length: segmentLength,
-                    eleChange: isClimbing === "Climb" ? segmentEleChange : -segmentEleChange,
-                    avgGrade: (segmentEleChange / (segmentLength * 1000)) * 100,
-                    section: getSectionForDist(start.dist)
-                });
+        if (currentSegType === null) {
+            let initialDiff = currentEle - gpxData[0].ele;
+            if (initialDiff > 0) {
+                currentSegType = "Climb";
+            } else if (initialDiff < 0) {
+                currentSegType = "Descent";
             }
+            extremeIdx = i;
+            continue;
+        }
 
-            // Start new segment
-            isClimbing = currentDir;
-            startSegmentIdx = i - 1;
+        if (currentSegType === "Climb") {
+            if (currentEle > extremeEle) {
+                extremeIdx = i; // New peak
+            } else if (eleDiffFromExtreme < -COUNTER_ELE_THRESHOLD) {
+                // Counter-elevation exceeded threshold -> Break segment at extremeIdx
+
+                let startPoint = gpxData[startIdx];
+                let endPoint = gpxData[extremeIdx];
+                let eleChange = endPoint.ele - startPoint.ele;
+                let length = endPoint.dist - startPoint.dist;
+
+                if (Math.abs(eleChange) >= ELE_THRESHOLD && length > 0.1) {
+                    segments.push({
+                        type: "Climb",
+                        startDist: startPoint.dist,
+                        length: length,
+                        eleChange: eleChange,
+                        avgGrade: (eleChange / (length * 1000)) * 100,
+                        sectionName: getSectionForDist(startPoint.dist)
+                    });
+                }
+
+                // Start a new descent segment from the peak
+                currentSegType = "Descent";
+                startIdx = extremeIdx;
+                extremeIdx = i;
+            }
+        } else if (currentSegType === "Descent") {
+            if (currentEle < extremeEle) {
+                extremeIdx = i; // New valley
+            } else if (eleDiffFromExtreme > COUNTER_ELE_THRESHOLD) {
+                // Counter-elevation exceeded threshold -> Break segment at extremeIdx
+
+                let startPoint = gpxData[startIdx];
+                let endPoint = gpxData[extremeIdx];
+                let eleChange = endPoint.ele - startPoint.ele; // This is negative
+                let length = endPoint.dist - startPoint.dist;
+
+                if (Math.abs(eleChange) >= ELE_THRESHOLD && length > 0.1) {
+                    segments.push({
+                        type: "Descent",
+                        startDist: startPoint.dist,
+                        length: length,
+                        eleChange: eleChange,
+                        avgGrade: (Math.abs(eleChange) / (length * 1000)) * 100,
+                        sectionName: getSectionForDist(startPoint.dist)
+                    });
+                }
+
+                // Start a new climb segment from the valley
+                currentSegType = "Climb";
+                startIdx = extremeIdx;
+                extremeIdx = i;
+            }
         }
     }
 
-    // Handle last segment
-    let start = smoothData[startSegmentIdx];
-    let end = smoothData[smoothData.length - 1];
-    let segmentEleChange = Math.abs(end.rawEle - start.rawEle);
-    let segmentLength = end.dist - start.dist;
-    if (segmentEleChange >= ELE_THRESHOLD && segmentLength > 0.1) {
-        segments.push({
-            type: isClimbing,
-            startDist: start.dist,
-            length: segmentLength,
-            eleChange: isClimbing === "Climb" ? segmentEleChange : -segmentEleChange,
-            avgGrade: (segmentEleChange / (segmentLength * 1000)) * 100,
-            section: getSectionForDist(start.dist)
-        });
+    // Handle the last remaining segment
+    if (startIdx < gpxData.length - 1) {
+        let startPoint = gpxData[startIdx];
+        let endPoint = gpxData[gpxData.length - 1]; // Use the very end point
+        let eleChange = endPoint.ele - startPoint.ele;
+        let length = endPoint.dist - startPoint.dist;
+
+        if (Math.abs(eleChange) >= ELE_THRESHOLD && length > 0.1) {
+            // Recalculate type based on final change if necessary
+            let finalType = eleChange > 0 ? "Climb" : "Descent";
+            segments.push({
+                type: finalType,
+                startDist: startPoint.dist,
+                length: length,
+                eleChange: eleChange,
+                avgGrade: (Math.abs(eleChange) / (length * 1000)) * 100,
+                sectionName: getSectionForDist(startPoint.dist)
+            });
+        }
     }
 
     // Render table
-    let currentSectionRender = -1;
+    let currentRenderSection = "";
     segments.forEach(seg => {
-        if (seg.section !== currentSectionRender) {
-            const secRow = document.createElement("tr");
-            secRow.className = "section-row visible";
-            secRow.innerHTML = `<td colspan="5" style="text-align: left; font-weight: bold; background-color: #ecf0f1;">Section ${seg.section}</td>`;
-            climbsTableBody.appendChild(secRow);
-            currentSectionRender = seg.section;
+        if (seg.sectionName !== currentRenderSection) {
+            currentRenderSection = seg.sectionName;
+
+            // Default first section expanded, others collapsed
+            const isFirstSection = (currentRenderSection === getSectionForDist(0));
+
+            let sectionRow = document.createElement("tr");
+            sectionRow.className = "section-header-row climb-section-header";
+            sectionRow.style.cursor = "pointer";
+            sectionRow.style.backgroundColor = "#ecf0f1";
+
+            sectionRow.innerHTML = `
+                <td colspan="5" style="text-align: left; font-weight: bold;">
+                    Section ${currentRenderSection}
+                    <span class="toggle-icon" style="float: right;">${isFirstSection ? '▼' : '▶'}</span>
+                </td>
+            `;
+            climbsTableBody.appendChild(sectionRow);
+
+            // Add click listener for expansion
+            sectionRow.addEventListener('click', function() {
+                let currentIsExpanded = this.querySelector('.toggle-icon').textContent === '▼';
+                let nextRows = [];
+                let curr = this.nextElementSibling;
+                while (curr && !curr.classList.contains('climb-section-header')) {
+                    nextRows.push(curr);
+                    curr = curr.nextElementSibling;
+                }
+
+                if (currentIsExpanded) {
+                    this.querySelector('.toggle-icon').textContent = '▶';
+                    nextRows.forEach(row => row.style.display = 'none');
+                } else {
+                    this.querySelector('.toggle-icon').textContent = '▼';
+                    nextRows.forEach(row => row.style.display = '');
+                }
+            });
         }
 
         const row = document.createElement("tr");
+        row.className = "climb-row";
+
+        const isFirstSectionRow = (seg.sectionName === getSectionForDist(0));
+        if (!isFirstSectionRow) {
+            row.style.display = 'none'; // Collapse non-first sections by default
+        }
+
         row.innerHTML = `
             <td>${seg.type === "Climb" ? "↗ Climb" : "↘ Descent"}</td>
             <td>${seg.startDist.toFixed(1)}</td>
