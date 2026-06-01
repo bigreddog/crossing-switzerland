@@ -250,6 +250,7 @@ async function loadGPX() {
         enrichSectionDataWithGPX();
         populateTable();
         renderElevationChart();
+        populateClimbsTable();
 
     } catch (error) {
         console.error("Error loading GPX:", error);
@@ -568,9 +569,132 @@ function calculateTimes() {
     });
 }
 
+function populateClimbsTable() {
+    const climbsTableBody = document.getElementById("climbs-table-body");
+    if (!climbsTableBody) return;
+    climbsTableBody.innerHTML = '';
+
+    if (!gpxData || gpxData.length === 0) return;
+
+    let currentSectionIdx = 0;
+    let sectionStartDist = 0;
+    let nextSectionDist = sectionData[0].distance;
+
+    // Minimum elevation change to consider a "major" climb/descent
+    const ELE_THRESHOLD = 50;
+
+    // We will scan gpxData to find major directional changes
+    let isClimbing = null;
+    let startSegmentIdx = 0;
+
+    // Smooth data slightly to avoid micro-fluctuations
+    const smoothData = [];
+    let windowSize = 5; // Use moving average
+    for (let i = 0; i < gpxData.length; i++) {
+        let sum = 0;
+        let count = 0;
+        for (let j = Math.max(0, i - windowSize); j <= Math.min(gpxData.length - 1, i + windowSize); j++) {
+            sum += gpxData[j].ele;
+            count++;
+        }
+        smoothData.push({
+            dist: gpxData[i].dist,
+            ele: sum / count,
+            rawEle: gpxData[i].ele
+        });
+    }
+
+    let segments = [];
+
+    for (let i = 1; i < smoothData.length; i++) {
+        let eleDiff = smoothData[i].ele - smoothData[i-1].ele;
+
+        // Determine current direction
+        let currentDir = eleDiff > 0 ? "Climb" : (eleDiff < 0 ? "Descent" : isClimbing);
+
+        if (isClimbing === null) {
+            isClimbing = currentDir;
+            startSegmentIdx = i - 1;
+        } else if (currentDir !== isClimbing) {
+            // Direction changed, record previous segment if it meets threshold
+            let start = smoothData[startSegmentIdx];
+            let end = smoothData[i-1];
+            let segmentEleChange = Math.abs(end.rawEle - start.rawEle);
+            let segmentLength = end.dist - start.dist;
+
+            if (segmentEleChange >= ELE_THRESHOLD && segmentLength > 0.1) {
+                segments.push({
+                    type: isClimbing,
+                    startDist: start.dist,
+                    length: segmentLength,
+                    eleChange: isClimbing === "Climb" ? segmentEleChange : -segmentEleChange,
+                    avgGrade: (segmentEleChange / (segmentLength * 1000)) * 100,
+                    section: getSectionForDist(start.dist)
+                });
+            }
+
+            // Start new segment
+            isClimbing = currentDir;
+            startSegmentIdx = i - 1;
+        }
+    }
+
+    // Handle last segment
+    let start = smoothData[startSegmentIdx];
+    let end = smoothData[smoothData.length - 1];
+    let segmentEleChange = Math.abs(end.rawEle - start.rawEle);
+    let segmentLength = end.dist - start.dist;
+    if (segmentEleChange >= ELE_THRESHOLD && segmentLength > 0.1) {
+        segments.push({
+            type: isClimbing,
+            startDist: start.dist,
+            length: segmentLength,
+            eleChange: isClimbing === "Climb" ? segmentEleChange : -segmentEleChange,
+            avgGrade: (segmentEleChange / (segmentLength * 1000)) * 100,
+            section: getSectionForDist(start.dist)
+        });
+    }
+
+    // Render table
+    let currentSectionRender = -1;
+    segments.forEach(seg => {
+        if (seg.section !== currentSectionRender) {
+            const secRow = document.createElement("tr");
+            secRow.className = "section-row visible";
+            secRow.innerHTML = `<td colspan="5" style="text-align: left; font-weight: bold; background-color: #ecf0f1;">Section ${seg.section}</td>`;
+            climbsTableBody.appendChild(secRow);
+            currentSectionRender = seg.section;
+        }
+
+        const row = document.createElement("tr");
+        row.innerHTML = `
+            <td>${seg.type === "Climb" ? "↗ Climb" : "↘ Descent"}</td>
+            <td>${seg.startDist.toFixed(1)}</td>
+            <td>${seg.length.toFixed(1)}</td>
+            <td style="color: ${seg.type === 'Climb' ? '#27ae60' : '#c0392b'}; font-weight: bold;">
+                ${seg.eleChange > 0 ? '+' : ''}${Math.round(seg.eleChange)}
+            </td>
+            <td>${seg.avgGrade.toFixed(1)}%</td>
+        `;
+        climbsTableBody.appendChild(row);
+    });
+}
+
+function getSectionForDist(dist) {
+    let cumul = 0;
+    for (let i = 0; i < sectionData.length; i++) {
+        cumul += sectionData[i].distance;
+        if (dist <= cumul + 0.1) { // 0.1 buffer for float precision
+            return sectionData[i].section;
+        }
+    }
+    return sectionData[sectionData.length - 1].section; // default to last section if somehow over
+}
+
+
 // Initialize everything when the DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
     initMap();
-    populateTable();
     initCalculator();
+    // populateClimbsTable is called inside initMap -> parseGPX -> parseGPXData since we need gpxData loaded
 });
