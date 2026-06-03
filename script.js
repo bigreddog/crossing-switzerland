@@ -512,7 +512,17 @@ function toggleSection(sectionId) {
 
 function initCalculator() {
     const targetInput = document.getElementById('target-time');
-    targetInput.addEventListener('input', calculateTimes);
+
+    // Load from local storage if available
+    const savedTime = localStorage.getItem('raceTargetTime');
+    if (savedTime) {
+        targetInput.value = savedTime;
+    }
+
+    targetInput.addEventListener('input', (e) => {
+        localStorage.setItem('raceTargetTime', e.target.value);
+        calculateTimes();
+    });
 }
 
 function calculateTimes() {
