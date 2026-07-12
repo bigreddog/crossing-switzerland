@@ -58,7 +58,7 @@ const sectionData = [
         elevationLoss: 819,
         cutoff: "-",
         aidStations: [
-            { name: "Grindelwald", type: "Base Camp", km: 205.7 }
+            { name: "Grindelwald", type: "Standard", km: 205.7 }
         ]
     },
     {
