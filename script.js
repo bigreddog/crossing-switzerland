@@ -3,15 +3,15 @@ const sectionData = [
     {
         section: 1,
         startEnd: "Bad Ragaz - Rüti GL",
-        distance: 68.5,
-        elevationGain: 5158,
-        elevationLoss: 5050,
-        cutoff: "MONDAY 20/07, 09h00",
+        distance: 78.5,
+        elevationGain: 5357,
+        elevationLoss: 5248,
+        cutoff: "MONDAY 20/07, 11h00",
         aidStations: [
             { name: "Pizolhütte", type: "Standard", km: 12.1 },
             { name: "Alp Ramin", type: "Standard", km: 34.8 },
             { name: "Obererbs", type: "Standard", km: 52.9 },
-            { name: "Rüti GL", type: "Base Camp", km: 68.5 }
+            { name: "Rüti GL", type: "Base Camp", km: 78.8 }
         ]
     },
     {
@@ -20,104 +20,106 @@ const sectionData = [
         distance: 41.2,
         elevationGain: 1934,
         elevationLoss: 2090,
-        cutoff: "TUESDAY 21/07, 03h00",
+        cutoff: "TUESDAY 21/07, 05h00",
         aidStations: [
             { name: "Klausen", type: "Standard", km: 89.2 },
-            { name: "Altdorf", type: "Base Camp", km: 109.7 }
+            { name: "Altdorf", type: "Base Camp", km: 120.0 }
         ]
     },
     {
         section: 3,
         startEnd: "Altdorf - Engelberg",
-        distance: 29.8,
-        elevationGain: 1932,
+        distance: 30.0,
+        elevationGain: 1929,
         elevationLoss: 1388,
         cutoff: "-",
         aidStations: [
             { name: "Blackenalp", type: "Standard", km: 127.1 },
-            { name: "Engelberg", type: "Standard", km: 139.5 }
+            { name: "Engelberg", type: "Standard", km: 150.0 }
         ]
     },
     {
         section: 4,
         startEnd: "Engelberg - Meiringen",
-        distance: 36.3,
-        elevationGain: 1868,
+        distance: 36.2,
+        elevationGain: 1934,
         elevationLoss: 2275,
-        cutoff: "WEDNESDAY 22/07, 08h00",
+        cutoff: "WEDNESDAY 22/07, 10h00",
         aidStations: [
-            { name: "Melchsee-Frutt", type: "Standard", km: 158.4 },
-            { name: "Meiringen", type: "Base Camp", km: 175.8 }
+            { name: "Melchsee-Frutt", type: "Standard", km: 168.7 },
+            { name: "Meiringen", type: "Base Camp", km: 186.2 }
         ]
     },
     {
         section: 5,
         startEnd: "Meiringen - Grindelwald",
-        distance: 19.0,
-        elevationGain: 1440,
+        distance: 19.5,
+        elevationGain: 1450,
         elevationLoss: 819,
         cutoff: "-",
         aidStations: [
-            { name: "Grindelwald", type: "Base Camp", km: 194.8 }
+            { name: "Grindelwald", type: "Base Camp", km: 205.7 }
         ]
     },
     {
         section: 6,
-        startEnd: "Grindelwald - Kandersteg",
-        distance: 43.1,
-        elevationGain: 2888,
-        elevationLoss: 2727,
-        cutoff: "THURSDAY 23/07, 08h00",
+        startEnd: "Grindelwald - Lauterbrunnen",
+        distance: 24.1,
+        elevationGain: 1347,
+        elevationLoss: 1247,
+        cutoff: "THURSDAY 23/07, 05h00",
         aidStations: [
-            { name: "Mürren", type: "Standard", km: 213.5 },
-            { name: "Kandersteg", type: "Base Camp", km: 237.9 }
+            { name: "Lauterbrunnen", type: "Base Camp", km: 229.0 }
         ]
     },
     {
         section: 7,
-        startEnd: "Kandersteg - Lenk",
-        distance: 28.3,
-        elevationGain: 1640,
-        elevationLoss: 1735,
-        cutoff: "FRIDAY 24/07, 01h00",
+        startEnd: "Lauterbrunnen - Adelboden",
+        distance: 55.7,
+        elevationGain: 4361,
+        elevationLoss: 3822,
+        cutoff: "FRIDAY 24/07, 08h00",
         aidStations: [
-            { name: "Adelboden", type: "Standard", km: 254.1 },
-            { name: "Lenk", type: "Base Camp", km: 266.2 }
+            { name: "Gspaltenhornhütte", type: "Self-Service", km: 238.7 },
+            { name: "Kandersteg", type: "Standard", km: 258.0 },
+            { name: "Adelboden", type: "Base Camp", km: 285.5 }
         ]
     },
     {
         section: 8,
-        startEnd: "Lenk - Gstaad",
-        distance: 21.0,
-        elevationGain: 1121,
-        elevationLoss: 1144,
-        cutoff: "-",
+        startEnd: "Adelboden - Les Diablerets",
+        distance: 60.1,
+        elevationGain: 3579,
+        elevationLoss: 3587,
+        cutoff: "SATURDAY 25/07, 12h00",
         aidStations: [
-            { name: "Gstaad", type: "Base Camp", km: 287.2 }
+            { name: "Iffigenalp", type: "Standard", km: 295.4 },
+            { name: "Gsteig", type: "Self-Service", km: 320.0 },
+            { name: "Les Diablerets", type: "Base Camp", km: 343.0 }
         ]
     },
     {
         section: 9,
-        startEnd: "Gstaad - Leysin",
-        distance: 39.8,
-        elevationGain: 2723,
-        elevationLoss: 2517,
-        cutoff: "SATURDAY 25/07, 04h00",
+        startEnd: "Les Diablerets - Le Sépey",
+        distance: 10.9,
+        elevationGain: 464,
+        elevationLoss: 826,
+        cutoff: "-",
         aidStations: [
-            { name: "Col des Mosses", type: "Standard", km: 310.2 },
-            { name: "Leysin", type: "Base Camp", km: 327.0 }
+            { name: "Le Sépey", type: "Standard", km: 354.4 }
         ]
     },
     {
         section: 10,
-        startEnd: "Leysin - Montreux",
-        distance: 58.8,
-        elevationGain: 3418,
-        elevationLoss: 4296,
-        cutoff: "SUNDAY 26/07, 08h00",
+        startEnd: "Le Sépey - Montreux",
+        distance: 44.2,
+        elevationGain: 2643,
+        elevationLoss: 3233,
+        cutoff: "SUNDAY 26/07, 16h00",
         aidStations: [
-            { name: "Col de Chaude", type: "Standard", km: 374.9 },
-            { name: "Montreux", type: "Finish", km: 385.8 }
+            { name: "Luan", type: "Standard", km: 366.0 },
+            { name: "Col de Chaude", type: "Standard", km: 378.0 },
+            { name: "Montreux", type: "Finish", km: 398.0 }
         ]
     }
 ];
