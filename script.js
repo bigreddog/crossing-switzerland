@@ -198,7 +198,7 @@ function initMap() {
 
 async function loadGPX() {
     try {
-        const response = await fetch('CROSSING SWITZERLAND 2026.gpx');
+        const response = await fetch('CROSSING SWITZERLAND 2026 (1).gpx');
         const text = await response.text();
 
         const parser = new DOMParser();
