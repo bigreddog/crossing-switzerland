@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crossing Switzerland 2026</title>
+
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>Crossing Switzerland 2026</h1>
+        <p>A 400km Ultra Race across the Swiss Alps</p>
+    </header>
+
+    <main>
+        <section id="map-section">
+            <h2>Race Route</h2>
+            <div id="map"></div>
+        </section>
+
+        <section id="table-section">
+            <h2>Race Plan & Summary</h2>
+
+            <div class="calculator" style="margin-bottom: 20px;">
+                <div class="input-group">
+                    <label for="target-time">Target Finish Time (hours):</label>
+                    <input type="number" id="target-time" value="100" step="1">
+                </div>
+                <p><small>Estimated times calculated using Riegel's formula for ultra endurance (fatigue factor 1.2).</small></p>
+            </div>
+
+            <div class="table-container">
+                <table id="summaryTable">
+                    <thead>
+                        <tr>
+                            <th>Section / Station</th>
+                            <th>Distance (km)</th>
+                            <th>Cumul. Dist. (km)</th>
+                            <th>Elev. Gain (m+)</th>
+                            <th>Elev. Loss (m-)</th>
+                            <th>Cutoff</th>
+                            <th>Est. Section Time</th>
+                            <th>Est. Elapsed Time</th>
+                            <th>Est. Time of Day</th>
+                        </tr>
+                    </thead>
+                    <tbody id="table-body">
+                        <!-- Rows will be populated by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section id="elevation-section">
+            <h2>Elevation Profile</h2>
+            <div class="chart-container">
+                <canvas id="elevationChart"></canvas>
+            </div>
+        </section>
+
+        <section id="climbs-section">
+            <h2>Climbs & Descents</h2>
+            <p><small>Major climbs and descents (&gt;50m elevation change) per section.</small></p>
+            <div class="table-container">
+                <table id="climbsTable">
+                    <thead>
+                        <tr>
+                            <th>Type</th>
+                            <th>Start Dist. (km)</th>
+                            <th>Length (km)</th>
+                            <th>Elev. Change (m)</th>
+                            <th>Avg Grade (%)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="climbs-table-body">
+                        <!-- Populated by JS -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Custom JS -->
+    <script src="script.js"></script>
+</body>
+</html>
