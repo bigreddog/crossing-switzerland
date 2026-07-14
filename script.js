@@ -848,3 +848,115 @@ document.addEventListener('DOMContentLoaded', () => {
     initCalculator();
     // populateClimbsTable is called inside initMap -> parseGPX -> parseGPXData since we need gpxData loaded
 });
+
+// ==========================================
+// PWA & Offline Map Downloading Logic
+// ==========================================
+
+function updateNetworkStatus() {
+    const statusEl = document.getElementById('network-status');
+    if (navigator.onLine) {
+        statusEl.textContent = '● Online';
+        statusEl.className = 'online';
+    } else {
+        statusEl.textContent = '● Offline';
+        statusEl.className = 'offline';
+    }
+}
+
+window.addEventListener('online', updateNetworkStatus);
+window.addEventListener('offline', updateNetworkStatus);
+updateNetworkStatus();
+
+// Convert lat/lon to slippy map tile X/Y
+function lon2tile(lon, zoom) { return (Math.floor((lon + 180) / 360 * Math.pow(2, zoom))); }
+function lat2tile(lat, zoom) { return (Math.floor((1 - Math.log(Math.tan(lat * Math.PI / 180) + 1 / Math.cos(lat * Math.PI / 180)) / Math.PI) / 2 * Math.pow(2, zoom))); }
+
+async function downloadMapTiles() {
+    if (!gpxData || gpxData.length === 0) {
+        alert("Route data not loaded yet. Please wait.");
+        return;
+    }
+
+    const btn = document.getElementById('download-map-btn');
+    const progressContainer = document.getElementById('download-progress-container');
+    const progressBar = document.getElementById('download-progress-bar');
+    const statusText = document.getElementById('download-status-text');
+
+    btn.disabled = true;
+    progressContainer.style.display = 'block';
+
+    // Zoom levels to cache
+    const zoomLevels = [12, 13, 14, 15];
+    const tilesToFetch = new Set(); // Use Set to avoid duplicates
+
+    statusText.textContent = "Calculating required tiles...";
+
+    // Calculate required tiles along the route
+    zoomLevels.forEach(z => {
+        // Sample points to reduce calculation time, route points are dense
+        for (let i = 0; i < gpxData.length; i += 10) {
+            let pt = gpxData[i];
+            let tx = lon2tile(pt.lon, z);
+            let ty = lat2tile(pt.lat, z);
+
+            // Add tile and a 1-tile buffer around it
+            for (let dx = -1; dx <= 1; dx++) {
+                for (let dy = -1; dy <= 1; dy++) {
+                    tilesToFetch.add(`${z}/${tx + dx}/${ty + dy}`);
+                }
+            }
+        }
+    });
+
+    const tilesArray = Array.from(tilesToFetch);
+    const totalTiles = tilesArray.length;
+    let downloaded = 0;
+
+    statusText.textContent = `Downloading ${totalTiles} tiles...`;
+
+    // Open the cache where SW expects map tiles
+    const cache = await caches.open('map-tiles-cache');
+
+    const BATCH_SIZE = 5; // Download 5 tiles concurrently to avoid overwhelming browser/network
+
+    for (let i = 0; i < totalTiles; i += BATCH_SIZE) {
+        const batch = tilesArray.slice(i, i + BATCH_SIZE);
+
+        await Promise.all(batch.map(async (tileCoord) => {
+            const [z, x, y] = tileCoord.split('/');
+            const tileUrl = `https://wmts.geo.admin.ch/1.0.0/ch.swisstopo.pixelkarte-farbe/default/current/3857/${z}/${x}/${y}.jpeg`;
+
+            try {
+                // Check if already cached
+                const response = await cache.match(tileUrl);
+                if (!response) {
+                    await cache.add(tileUrl);
+                }
+            } catch (err) {
+                console.warn(`Failed to cache tile ${tileUrl}`, err);
+            }
+
+            downloaded++;
+        }));
+
+        // Update UI
+        let progress = (downloaded / totalTiles) * 100;
+        progressBar.style.width = `${progress}%`;
+        statusText.textContent = `Downloaded ${downloaded} / ${totalTiles} tiles (${Math.round(progress)}%)`;
+    }
+
+    statusText.textContent = "Download complete! Map is ready for offline use.";
+    btn.disabled = false;
+    setTimeout(() => {
+        progressContainer.style.display = 'none';
+        btn.innerText = 'Update Offline Map';
+    }, 3000);
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    // Attach event listener to download button
+    document.getElementById('download-map-btn').addEventListener('click', downloadMapTiles);
+});
+
+// ==========================================
