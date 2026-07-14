@@ -173,6 +173,9 @@ function initMap() {
     L.control.layers(baseMaps).addTo(map);
 
     // Custom "Locate Me" Control
+    let locateActive = false;
+    let locateWatchId = null;
+
     L.Control.Locate = L.Control.extend({
         onAdd: function(map) {
             const container = L.DomUtil.create('div', 'leaflet-bar leaflet-control leaflet-control-custom');
@@ -184,11 +187,25 @@ function initMap() {
             container.style.alignItems = 'center';
             container.style.justifyContent = 'center';
             container.style.cursor = 'pointer';
-            container.title = "Go to current location";
+            container.title = "Toggle Location Tracking";
             container.innerHTML = "📍";
 
             container.onclick = function(){
-                map.locate({setView: true, maxZoom: 14});
+                if (!locateActive) {
+                    locateActive = true;
+                    container.style.backgroundColor = '#ecf0f1'; // highlight when active
+                    map.locate({setView: true, maxZoom: 14, watch: true});
+                } else {
+                    locateActive = false;
+                    container.style.backgroundColor = 'white';
+                    map.stopLocate();
+                    if (userMarker) {
+                        map.removeLayer(userMarker);
+                        map.removeLayer(userCircle);
+                        userMarker = null;
+                        userCircle = null;
+                    }
+                }
             }
             return container;
         }
@@ -214,7 +231,11 @@ function initMap() {
     });
 
     map.on('locationerror', function(e) {
-        alert("Geolocation access failed or was denied.");
+        if (locateActive) {
+            alert("Geolocation access failed or was denied.");
+            locateActive = false;
+            map.stopLocate();
+        }
     });
 
     loadGPX();
