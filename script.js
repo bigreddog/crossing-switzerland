@@ -162,29 +162,15 @@ function initMap() {
         bounds: [[45.398181, 5.715944], [48.230651, 10.951754]]
     });
 
-    // Outdoor Overlay (Hiking Trails)
-    const outdoorOverlay = L.tileLayer('https://wmts.geo.admin.ch/1.0.0/ch.swisstopo.swisstlm3d-wanderwege/default/current/3857/{z}/{x}/{y}.png', {
-        attribution: '&copy; <a href="https://www.swisstopo.admin.ch/">swisstopo</a>',
-        minZoom: 2,
-        maxZoom: 18,
-        bounds: [[45.398181, 5.715944], [48.230651, 10.951754]],
-        opacity: 0.7
-    });
-
     // Add Swiss Topo as default
     swissTopo.addTo(map);
-    outdoorOverlay.addTo(map); // Default overlay active
 
     const baseMaps = {
         "Swiss Topo (Swisstopo)": swissTopo,
         "OpenStreetMap": openStreetMap
     };
 
-    const overlayMaps = {
-        "Hiking Trails": outdoorOverlay
-    };
-
-    L.control.layers(baseMaps, overlayMaps).addTo(map);
+    L.control.layers(baseMaps).addTo(map);
 
     // Custom "Locate Me" Control
     L.Control.Locate = L.Control.extend({
