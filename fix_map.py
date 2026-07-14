@@ -1,10 +1,8 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Crossing Switzerland 2026</title>
+import re
 
+content = open("index.html", "r").read()
+
+leaflet_code = """
     <!-- Leaflet CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
     <!-- Leaflet Fullscreen CSS -->
@@ -15,10 +13,9 @@
     <script src='https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/Leaflet.fullscreen.min.js'></script>
     <!-- Leaflet Swiss -->
     <script src="https://unpkg.com/leaflet-tilelayer-swiss@2.3.0/dist/leaflet-tilelayer-swiss.umd.js"></script>
-    <!-- Chart.js -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+"""
 
-    <!-- Custom JS -->
-    <script src="script.js"></script>
-</body>
-</html>
+content = re.sub(r'<!-- Leaflet CSS -->[\s\S]*?<!-- Leaflet Swiss -->[\s\S]*?<\/script>', leaflet_code.strip(), content)
+
+with open("index.html", "w") as f:
+    f.write(content)

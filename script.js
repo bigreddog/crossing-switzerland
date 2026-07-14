@@ -117,7 +117,7 @@ const sectionData = [
         elevationLoss: 3233,
         cutoff: "SUNDAY 26/07, 16h00",
         aidStations: [
-            { name: "Luan", type: "Standard", km: 366.0 },
+            { name: "Luan", type: "Standard", km: 366.0, cutoff: "SUNDAY 26/07, 03h00" },
             { name: "Col de Chaude", type: "Standard", km: 378.0 },
             { name: "Montreux", type: "Finish", km: 398.0 }
         ]
@@ -142,11 +142,33 @@ let gpxData = [];
 
 // Initialize Map
 function initMap() {
-    map = L.map('map').setView([46.8, 8.2], 8); // Center of Switzerland
+    map = L.map('map', {
+        crs: L.CRS.EPSG3857, // or L.CRS.EPSG2056 depending on how leaflet-tilelayer-swiss works by default, but it handles it internally usually. Let's just use normal first.
+        fullscreenControl: true,
+        fullscreenControlOptions: {
+            position: 'topleft'
+        }
+    }).setView([46.8, 8.2], 8); // Center of Switzerland
 
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    // Base maps
+    const openStreetMap = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-    }).addTo(map);
+    });
+
+    const swissTopo = L.tileLayer.swiss({
+        format: 'jpeg',
+        maxNativeZoom: 18
+    });
+
+    // Add Swiss Topo as default
+    swissTopo.addTo(map);
+
+    const baseMaps = {
+        "Swiss Topo (Swisstopo)": swissTopo,
+        "OpenStreetMap": openStreetMap
+    };
+
+    L.control.layers(baseMaps).addTo(map);
 
     // Custom "Locate Me" Control
     L.Control.Locate = L.Control.extend({
@@ -403,15 +425,42 @@ function addAidStationMarkers() {
             }
         }
 
-        L.marker([closestPoint.lat, closestPoint.lon])
+
+        let markerColor = 'blue';
+        let type = 'Standard';
+
+        // Find if it's a base camp from sectionData
+        for (let s of sectionData) {
+            for (let a of s.aidStations) {
+                if (a.name === station.name) {
+                    type = a.type;
+                    if (a.type === 'Base Camp') {
+                        markerColor = 'red';
+                    }
+                    break;
+                }
+            }
+        }
+
+        const myIcon = L.icon({
+          iconUrl: `https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-${markerColor}.png`,
+          shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+          iconSize: [25, 41],
+          iconAnchor: [12, 41],
+          popupAnchor: [1, -34],
+          shadowSize: [41, 41]
+        });
+
+        L.marker([closestPoint.lat, closestPoint.lon], {icon: myIcon})
             .addTo(map)
-            .bindPopup(`<b>${station.name}</b><br>Km: ${station.km}`);
+            .bindPopup(`<b>${station.name}</b><br>Km: ${station.km}<br>Type: ${type}`);
+
     });
 }
 
 const aidStations = [
     { name: "Pizolhütte", km: 12.1 },
-    { name: "Alpramin", km: 34.8 },
+    { name: "Alp Ramin", km: 34.8 },
     { name: "Obererbs", km: 52.9 },
     { name: "Rüti GL", km: 78.8 },
     { name: "Klausen", km: 89.2 },
@@ -485,7 +534,7 @@ function populateTable() {
                 <td>${station.km.toFixed(1)}</td>
                 <td>${station.segGain}</td>
                 <td>${station.segLoss}</td>
-                <td>-</td>
+                <td>${station.cutoff || '-'}</td>
                 <td class="est-section" data-km="${station.km}" data-prev-km="${tempPrevKm}">-</td>
                 <td class="est-elapsed" data-km="${station.km}">-</td>
                 <td class="est-tod" data-km="${station.km}">-</td>
