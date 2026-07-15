@@ -3,15 +3,16 @@ const sectionData = [
     {
         section: 1,
         startEnd: "Bad Ragaz - Rüti GL",
-        distance: 68.5,
-        elevationGain: 5158,
-        elevationLoss: 5050,
-        cutoff: "MONDAY 20/07, 09h00",
+        distance: 78.5,
+        elevationGain: 5357,
+        elevationLoss: 5248,
+        cutoff: "MONDAY 20/07, 11h00",
         aidStations: [
             { name: "Pizolhütte", type: "Standard", km: 12.1 },
-            { name: "Alpramin", type: "Standard", km: 34.8 },
-            { name: "Obererbs", type: "Standard", km: 52.9 },
-            { name: "Rüti GL", type: "Base Camp", km: 68.5 }
+            { name: "Weisstannen", type: "Standard", km: 30.0 },
+            { name: "Alp Ramin", type: "Standard", km: 45.0 },
+            { name: "Obererbs", type: "Standard", km: 63.1 },
+            { name: "Rüti GL", type: "Base Camp", km: 78.8 }
         ]
     },
     {
@@ -20,69 +21,69 @@ const sectionData = [
         distance: 41.2,
         elevationGain: 1934,
         elevationLoss: 2090,
-        cutoff: "TUESDAY 21/07, 03h00",
+        cutoff: "TUESDAY 21/07, 05h00",
         aidStations: [
             { name: "Klausen", type: "Standard", km: 89.2 },
-            { name: "Altdorf", type: "Base Camp", km: 109.7 }
+            { name: "Altdorf", type: "Base Camp", km: 120.0 }
         ]
     },
     {
         section: 3,
         startEnd: "Altdorf - Engelberg",
-        distance: 29.8,
-        elevationGain: 1932,
+        distance: 30.0,
+        elevationGain: 1929,
         elevationLoss: 1388,
         cutoff: "-",
         aidStations: [
             { name: "Blackenalp", type: "Standard", km: 127.1 },
-            { name: "Engelberg", type: "Standard", km: 139.5 }
+            { name: "Engelberg", type: "Standard", km: 150.0 }
         ]
     },
     {
         section: 4,
         startEnd: "Engelberg - Meiringen",
-        distance: 36.3,
-        elevationGain: 1868,
+        distance: 36.2,
+        elevationGain: 1934,
         elevationLoss: 2275,
-        cutoff: "WEDNESDAY 22/07, 08h00",
+        cutoff: "WEDNESDAY 22/07, 10h00",
         aidStations: [
-            { name: "Melchsee-Frutt", type: "Standard", km: 158.4 },
-            { name: "Meiringen", type: "Base Camp", km: 175.8 }
+            { name: "Melchsee-Frutt", type: "Standard", km: 168.7 },
+            { name: "Meiringen", type: "Base Camp", km: 186.2 }
         ]
     },
     {
         section: 5,
         startEnd: "Meiringen - Grindelwald",
-        distance: 19.0,
-        elevationGain: 1440,
+        distance: 19.5,
+        elevationGain: 1450,
         elevationLoss: 819,
         cutoff: "-",
         aidStations: [
-            { name: "Grindelwald", type: "Standard", km: 194.8 }
+            { name: "Grindelwald", type: "Standard", km: 205.7 }
         ]
     },
     {
         section: 6,
         startEnd: "Grindelwald - Lauterbrunnen",
-        distance: 24.5,
-        elevationGain: 1344,
+        distance: 24.1,
+        elevationGain: 1347,
         elevationLoss: 1247,
-        cutoff: "THURSDAY 23/07, 03h00",
+        cutoff: "THURSDAY 23/07, 05h00",
         aidStations: [
-            { name: "Lauterbrunnen", type: "Base Camp", km: 219.3 }
+            { name: "Lauterbrunnen", type: "Base Camp", km: 229.0 }
         ]
     },
     {
         section: 7,
         startEnd: "Lauterbrunnen - Adelboden",
-        distance: 55.6,
-        elevationGain: 4362,
+        distance: 55.7,
+        elevationGain: 4361,
         elevationLoss: 3822,
-        cutoff: "FRIDAY 24/07, 06h00",
+        cutoff: "FRIDAY 24/07, 08h00",
         aidStations: [
-            { name: "Gspaltenhornhütte", type: "Self-Service", km: 238.7 },
+            { name: "Bundalp", type: "Standard", km: 253.0 },
             { name: "Kandersteg", type: "Standard", km: 258.0 },
-            { name: "Adelboden", type: "Base Camp", km: 275.0 }
+            { name: "Adelboden", type: "Base Camp", km: 285.5 }
         ]
     },
     {
@@ -91,35 +92,35 @@ const sectionData = [
         distance: 60.1,
         elevationGain: 3579,
         elevationLoss: 3587,
-        cutoff: "SATURDAY 25/07, 11h00",
+        cutoff: "SATURDAY 25/07, 12h00",
         aidStations: [
             { name: "Iffigenalp", type: "Standard", km: 295.4 },
             { name: "Gsteig", type: "Self-Service", km: 320.0 },
-            { name: "Les Diablerets", type: "Base Camp", km: 335.0 }
+            { name: "Les Diablerets", type: "Base Camp", km: 343.0 }
         ]
     },
     {
         section: 9,
         startEnd: "Les Diablerets - Le Sépey",
-        distance: 14.5,
-        elevationGain: 736,
-        elevationLoss: 1094,
+        distance: 10.9,
+        elevationGain: 464,
+        elevationLoss: 826,
         cutoff: "-",
         aidStations: [
-            { name: "Le Sépey", type: "Standard", km: 349.5 }
+            { name: "Le Sépey", type: "Standard", km: 354.4 }
         ]
     },
     {
         section: 10,
         startEnd: "Le Sépey - Montreux",
-        distance: 36.3,
-        elevationGain: 2638,
-        elevationLoss: 3235,
+        distance: 44.2,
+        elevationGain: 2643,
+        elevationLoss: 3233,
         cutoff: "SUNDAY 26/07, 16h00",
         aidStations: [
-            { name: "Luan", type: "Standard", km: 362.0 },
+            { name: "Luan", type: "Standard", km: 366.0, cutoff: "SUNDAY 26/07, 03h00" },
             { name: "Col de Chaude", type: "Standard", km: 378.0 },
-            { name: "Montreux", type: "Finish", km: 394.0 }
+            { name: "Montreux", type: "Finish", km: 398.0 }
         ]
     }
 ];
@@ -142,13 +143,40 @@ let gpxData = [];
 
 // Initialize Map
 function initMap() {
-    map = L.map('map').setView([46.8, 8.2], 8); // Center of Switzerland
+    map = L.map('map', {
+        crs: L.CRS.EPSG3857, // or L.CRS.EPSG2056 depending on how leaflet-tilelayer-swiss works by default, but it handles it internally usually. Let's just use normal first.
+        fullscreenControl: true,
+        fullscreenControlOptions: {
+            position: 'topleft'
+        }
+    }).setView([46.8, 8.2], 8); // Center of Switzerland
 
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    // Base maps
+    const openStreetMap = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-    }).addTo(map);
+    });
+
+    const swissTopo = L.tileLayer('https://wmts.geo.admin.ch/1.0.0/ch.swisstopo.pixelkarte-farbe/default/current/3857/{z}/{x}/{y}.jpeg', {
+        attribution: '&copy; <a href="https://www.swisstopo.admin.ch/">swisstopo</a>',
+        minZoom: 2,
+        maxZoom: 18,
+        bounds: [[45.398181, 5.715944], [48.230651, 10.951754]]
+    });
+
+    // Add Swiss Topo as default
+    swissTopo.addTo(map);
+
+    const baseMaps = {
+        "Swiss Topo (Swisstopo)": swissTopo,
+        "OpenStreetMap": openStreetMap
+    };
+
+    L.control.layers(baseMaps).addTo(map);
 
     // Custom "Locate Me" Control
+    let locateActive = false;
+    let locateWatchId = null;
+
     L.Control.Locate = L.Control.extend({
         onAdd: function(map) {
             const container = L.DomUtil.create('div', 'leaflet-bar leaflet-control leaflet-control-custom');
@@ -160,11 +188,25 @@ function initMap() {
             container.style.alignItems = 'center';
             container.style.justifyContent = 'center';
             container.style.cursor = 'pointer';
-            container.title = "Go to current location";
+            container.title = "Toggle Location Tracking";
             container.innerHTML = "📍";
 
             container.onclick = function(){
-                map.locate({setView: true, maxZoom: 14});
+                if (!locateActive) {
+                    locateActive = true;
+                    container.style.backgroundColor = '#ecf0f1'; // highlight when active
+                    map.locate({setView: true, maxZoom: 14, watch: true});
+                } else {
+                    locateActive = false;
+                    container.style.backgroundColor = 'white';
+                    map.stopLocate();
+                    if (userMarker) {
+                        map.removeLayer(userMarker);
+                        map.removeLayer(userCircle);
+                        userMarker = null;
+                        userCircle = null;
+                    }
+                }
             }
             return container;
         }
@@ -190,7 +232,11 @@ function initMap() {
     });
 
     map.on('locationerror', function(e) {
-        alert("Geolocation access failed or was denied.");
+        if (locateActive) {
+            alert("Geolocation access failed or was denied.");
+            locateActive = false;
+            map.stopLocate();
+        }
     });
 
     loadGPX();
@@ -198,7 +244,7 @@ function initMap() {
 
 async function loadGPX() {
     try {
-        const response = await fetch('CROSSING SWITZERLAND 2026.gpx');
+        const response = await fetch('CROSSING SWITZERLAND 2026 (1).gpx');
         const text = await response.text();
 
         const parser = new DOMParser();
@@ -403,35 +449,63 @@ function addAidStationMarkers() {
             }
         }
 
-        L.marker([closestPoint.lat, closestPoint.lon])
+
+        let markerColor = 'blue';
+        let type = 'Standard';
+
+        // Find if it's a base camp from sectionData
+        for (let s of sectionData) {
+            for (let a of s.aidStations) {
+                if (a.name === station.name) {
+                    type = a.type;
+                    if (a.type === 'Base Camp') {
+                        markerColor = 'red';
+                    }
+                    break;
+                }
+            }
+        }
+
+        const myIcon = L.icon({
+          iconUrl: `https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-${markerColor}.png`,
+          shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+          iconSize: [25, 41],
+          iconAnchor: [12, 41],
+          popupAnchor: [1, -34],
+          shadowSize: [41, 41]
+        });
+
+        L.marker([closestPoint.lat, closestPoint.lon], {icon: myIcon})
             .addTo(map)
-            .bindPopup(`<b>${station.name}</b><br>Km: ${station.km}`);
+            .bindPopup(`<b>${station.name}</b><br>Km: ${station.km}<br>Type: ${type}`);
+
     });
 }
 
 const aidStations = [
     { name: "Pizolhütte", km: 12.1 },
-    { name: "Alpramin", km: 34.8 },
-    { name: "Obererbs", km: 52.9 },
-    { name: "Rüti GL", km: 68.5 },
+    { name: "Weisstannen", km: 30.0 },
+    { name: "Alp Ramin", km: 45.0 },
+    { name: "Obererbs", km: 63.1 },
+    { name: "Rüti GL", km: 78.8 },
     { name: "Klausen", km: 89.2 },
-    { name: "Altdorf", km: 109.7 },
+    { name: "Altdorf", km: 120.0 },
     { name: "Blackenalp", km: 127.1 },
-    { name: "Engelberg", km: 139.5 },
-    { name: "Melchsee-Frutt", km: 158.4 },
-    { name: "Meiringen", km: 175.8 },
-    { name: "Grindelwald", km: 194.8 },
-    { name: "Lauterbrunnen", km: 219.3 },
-    { name: "Gspaltenhornhütte", km: 238.7 },
+    { name: "Engelberg", km: 150.0 },
+    { name: "Melchsee-Frutt", km: 168.7 },
+    { name: "Meiringen", km: 186.2 },
+    { name: "Grindelwald", km: 205.7 },
+    { name: "Lauterbrunnen", km: 229.0 },
+    { name: "Bundalp", km: 253.0 },
     { name: "Kandersteg", km: 258.0 },
-    { name: "Adelboden", km: 275.0 },
+    { name: "Adelboden", km: 285.5 },
     { name: "Iffigenalp", km: 295.4 },
     { name: "Gsteig", km: 320.0 },
-    { name: "Les Diablerets", km: 335.0 },
-    { name: "Le Sépey", km: 349.5 },
-    { name: "Luan", km: 362.0 },
+    { name: "Les Diablerets", km: 343.0 },
+    { name: "Le Sépey", km: 354.4 },
+    { name: "Luan", km: 366.0 },
     { name: "Col de Chaude", km: 378.0 },
-    { name: "Montreux", km: 394.0 } // Estimated final distance
+    { name: "Montreux", km: 398.0 } // Estimated final distance
 ];
 
 function populateTable() {
@@ -485,7 +559,7 @@ function populateTable() {
                 <td>${station.km.toFixed(1)}</td>
                 <td>${station.segGain}</td>
                 <td>${station.segLoss}</td>
-                <td>-</td>
+                <td>${station.cutoff || '-'}</td>
                 <td class="est-section" data-km="${station.km}" data-prev-km="${tempPrevKm}">-</td>
                 <td class="est-elapsed" data-km="${station.km}">-</td>
                 <td class="est-tod" data-km="${station.km}">-</td>
@@ -797,3 +871,115 @@ document.addEventListener('DOMContentLoaded', () => {
     initCalculator();
     // populateClimbsTable is called inside initMap -> parseGPX -> parseGPXData since we need gpxData loaded
 });
+
+// ==========================================
+// PWA & Offline Map Downloading Logic
+// ==========================================
+
+function updateNetworkStatus() {
+    const statusEl = document.getElementById('network-status');
+    if (navigator.onLine) {
+        statusEl.textContent = '● Online';
+        statusEl.className = 'online';
+    } else {
+        statusEl.textContent = '● Offline';
+        statusEl.className = 'offline';
+    }
+}
+
+window.addEventListener('online', updateNetworkStatus);
+window.addEventListener('offline', updateNetworkStatus);
+updateNetworkStatus();
+
+// Convert lat/lon to slippy map tile X/Y
+function lon2tile(lon, zoom) { return (Math.floor((lon + 180) / 360 * Math.pow(2, zoom))); }
+function lat2tile(lat, zoom) { return (Math.floor((1 - Math.log(Math.tan(lat * Math.PI / 180) + 1 / Math.cos(lat * Math.PI / 180)) / Math.PI) / 2 * Math.pow(2, zoom))); }
+
+async function downloadMapTiles() {
+    if (!gpxData || gpxData.length === 0) {
+        alert("Route data not loaded yet. Please wait.");
+        return;
+    }
+
+    const btn = document.getElementById('download-map-btn');
+    const progressContainer = document.getElementById('download-progress-container');
+    const progressBar = document.getElementById('download-progress-bar');
+    const statusText = document.getElementById('download-status-text');
+
+    btn.disabled = true;
+    progressContainer.style.display = 'block';
+
+    // Zoom levels to cache
+    const zoomLevels = [12, 13, 14, 15];
+    const tilesToFetch = new Set(); // Use Set to avoid duplicates
+
+    statusText.textContent = "Calculating required tiles...";
+
+    // Calculate required tiles along the route
+    zoomLevels.forEach(z => {
+        // Sample points to reduce calculation time, route points are dense
+        for (let i = 0; i < gpxData.length; i += 10) {
+            let pt = gpxData[i];
+            let tx = lon2tile(pt.lon, z);
+            let ty = lat2tile(pt.lat, z);
+
+            // Add tile and a 1-tile buffer around it
+            for (let dx = -1; dx <= 1; dx++) {
+                for (let dy = -1; dy <= 1; dy++) {
+                    tilesToFetch.add(`${z}/${tx + dx}/${ty + dy}`);
+                }
+            }
+        }
+    });
+
+    const tilesArray = Array.from(tilesToFetch);
+    const totalTiles = tilesArray.length;
+    let downloaded = 0;
+
+    statusText.textContent = `Downloading ${totalTiles} tiles...`;
+
+    // Open the cache where SW expects map tiles
+    const cache = await caches.open('map-tiles-cache');
+
+    const BATCH_SIZE = 5; // Download 5 tiles concurrently to avoid overwhelming browser/network
+
+    for (let i = 0; i < totalTiles; i += BATCH_SIZE) {
+        const batch = tilesArray.slice(i, i + BATCH_SIZE);
+
+        await Promise.all(batch.map(async (tileCoord) => {
+            const [z, x, y] = tileCoord.split('/');
+            const tileUrl = `https://wmts.geo.admin.ch/1.0.0/ch.swisstopo.pixelkarte-farbe/default/current/3857/${z}/${x}/${y}.jpeg`;
+
+            try {
+                // Check if already cached
+                const response = await cache.match(tileUrl);
+                if (!response) {
+                    await cache.add(tileUrl);
+                }
+            } catch (err) {
+                console.warn(`Failed to cache tile ${tileUrl}`, err);
+            }
+
+            downloaded++;
+        }));
+
+        // Update UI
+        let progress = (downloaded / totalTiles) * 100;
+        progressBar.style.width = `${progress}%`;
+        statusText.textContent = `Downloaded ${downloaded} / ${totalTiles} tiles (${Math.round(progress)}%)`;
+    }
+
+    statusText.textContent = "Download complete! Map is ready for offline use.";
+    btn.disabled = false;
+    setTimeout(() => {
+        progressContainer.style.display = 'none';
+        btn.innerText = 'Update Offline Map';
+    }, 3000);
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    // Attach event listener to download button
+    document.getElementById('download-map-btn').addEventListener('click', downloadMapTiles);
+});
+
+// ==========================================
