@@ -81,7 +81,7 @@ const sectionData = [
         elevationLoss: 3822,
         cutoff: "FRIDAY 24/07, 08h00",
         aidStations: [
-            { name: "Gspaltenhornhütte", type: "Self-Service", km: 238.7 },
+            { name: "Bundalp", type: "Standard", km: 253.0 },
             { name: "Kandersteg", type: "Standard", km: 258.0 },
             { name: "Adelboden", type: "Base Camp", km: 285.5 }
         ]
@@ -496,7 +496,7 @@ const aidStations = [
     { name: "Meiringen", km: 186.2 },
     { name: "Grindelwald", km: 205.7 },
     { name: "Lauterbrunnen", km: 229.0 },
-    { name: "Gspaltenhornhütte", km: 238.7 },
+    { name: "Bundalp", km: 253.0 },
     { name: "Kandersteg", km: 258.0 },
     { name: "Adelboden", km: 285.5 },
     { name: "Iffigenalp", km: 295.4 },
