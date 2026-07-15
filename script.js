@@ -9,8 +9,9 @@ const sectionData = [
         cutoff: "MONDAY 20/07, 11h00",
         aidStations: [
             { name: "Pizolhütte", type: "Standard", km: 12.1 },
-            { name: "Alp Ramin", type: "Standard", km: 34.8 },
-            { name: "Obererbs", type: "Standard", km: 52.9 },
+            { name: "Weisstannen", type: "Standard", km: 30.0 },
+            { name: "Alp Ramin", type: "Standard", km: 45.0 },
+            { name: "Obererbs", type: "Standard", km: 63.1 },
             { name: "Rüti GL", type: "Base Camp", km: 78.8 }
         ]
     },
@@ -483,8 +484,9 @@ function addAidStationMarkers() {
 
 const aidStations = [
     { name: "Pizolhütte", km: 12.1 },
-    { name: "Alp Ramin", km: 34.8 },
-    { name: "Obererbs", km: 52.9 },
+    { name: "Weisstannen", km: 30.0 },
+    { name: "Alp Ramin", km: 45.0 },
+    { name: "Obererbs", km: 63.1 },
     { name: "Rüti GL", km: 78.8 },
     { name: "Klausen", km: 89.2 },
     { name: "Altdorf", km: 120.0 },
